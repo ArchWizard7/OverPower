@@ -30,12 +30,25 @@
                 </li>
             </ul>
             <ul class="navbar-nav">
+                {% if session.username|length > 0 %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ session.username }} さん
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/logout">
+                            <i class="bi-power"></i> Logout
+                        </a></li>
+                    </ul>
+                </li>
+                {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('login') }}">
                         <i class="bi-arrow-right-square-fill"></i>
                         Login
                     </a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

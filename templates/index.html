@@ -24,7 +24,20 @@
 <nav id="navbar"></nav>
 
 <main role="main" class="container-fluid">
-    <div class="m-3 row rounded border shadow-lg">
+    {% if msg|length > 0 %}
+        <div class="m-3 p-3 row alert alert-{{ level }}">
+            <nobr>
+                {% if level == "success" %}
+                    <i class="bi-check-circle-fill"></i>
+                {% else %}
+                    <i class="bi-exclamation-circle-fill"></i>
+                {% endif %}
+                {{ msg }}
+            </nobr>
+        </div>
+    {% endif %}
+
+    <div class="m-3 p-3 row rounded border shadow-lg">
         <h1>OverPower</h1>
     </div>
 </main>
