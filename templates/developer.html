@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Developer</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/developer.js"></script>
+    <script type="module">
+        $("#navbar").load("/navbar");
+    </script>
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<main role="main" class="p-3 container-fluid">
+    <h1>
+        <i class="bi-terminal-fill"></i>
+        Developer
+    </h1>
+
+    <div class="my-3 p-3 row rounded border shadow-lg">
+        <h2 class="mb-3">
+            <i class="bi-music-note-beamed"></i>
+            Add Song
+        </h2>
+
+        <div class="row mb-3">
+            <div class="col-4 mb-3">
+                <label for="music-id" class="fw-bold">
+                    <i class="bi-key-fill"></i>
+                    ID
+                </label>
+                <input id="music-id" class="form-control" type="number" min="1" step="1" placeholder="ID">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4 mb-3">
+                <label for="music-title" class="fw-bold">
+                    <i class="bi-tag-fill"></i>
+                    Title
+                </label>
+                <input id="music-title" class="form-control" type="text" maxlength="127" placeholder="Title">
+            </div>
+
+            <div class="col-4 mb-3">
+                <label for="music-ruby" class="fw-bold">
+                    <i class="bi-tag-fill"></i>
+                    Ruby
+                </label>
+                <input id="music-ruby" class="form-control" type="text" maxlength="127" placeholder="Ruby">
+            </div>
+
+            <div class="col-4 mb-3">
+                <label for="music-artist" class="fw-bold">
+                    <i class="bi-person-check-fill"></i>
+                    Artist
+                </label>
+                <input id="music-artist" class="form-control" type="text" maxlength="127" placeholder="Artist">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4 mb-3">
+                <label for="music-genre" class="fw-bold">
+                    <i class="bi-music-note-list"></i>
+                    Genre
+                </label>
+                <select id="music-genre" class="form-select">
+                    <option selected>Choose Genre...</option>
+                    <option value="0">POPS&ANIME</option>
+                    <option value="1">niconico</option>
+                    <option value="2">東方Project</option>
+                    <option value="3">VARIETY</option>
+                    <option value="4">イロドリミドリ</option>
+                    <option value="5">ゲキマイ</option>
+                    <option value="6">ORIGINAL</option>
+                    <option value="7">WORLD'S END</option>
+                    <option value="8">ULTIMA</option>
+                </select>
+            </div>
+
+            <div class="col-4 mb-3">
+                <label for="music-version" class="fw-bold">
+                    <i class="bi-calendar-check"></i>
+                    Version
+                </label>
+                <select id="music-version" class="form-select">
+                    <option selected>Choose Version...</option>
+                    <option value="0">CHUNITHM</option>
+                    <option value="1">CHUNITHM PLUS</option>
+                    <option value="2">AIR</option>
+                    <option value="3">AIR PLUS</option>
+                    <option value="4">STAR</option>
+                    <option value="5">STAR PLUS</option>
+                    <option value="6">AMAZON</option>
+                    <option value="7">AMAZON PLUS</option>
+                    <option value="8">CRYSTAL</option>
+                    <option value="9">CRYSTAL PLUS</option>
+                    <option value="10">PARADISE</option>
+                    <option value="11">PARADISE LOST</option>
+                    <option value="12">NEW</option>
+                    <option value="13">NEW PLUS</option>
+                    <option value="14">SUN</option>
+                </select>
+            </div>
+
+            <div class="col-4 mb-3">
+                <label for="music-bpm" class="fw-bold">
+                    <i class="bi-music-note"></i>
+                    BPM
+                </label>
+                <input id="music-bpm" class="form-control" type="number" step="1" placeholder="BPM">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label for="music-jacket" class="fw-bold">
+                <i class="bi-music-note-list"></i>
+                Jacket UUID
+            </label>
+            <div class="col-4 mb-3 input-group">
+                <input id="music-jacket" class="form-control font-monospace" type="text" maxlength="36" placeholder="Jacket UUID" disabled>
+                <button id="uuid-generate-button" class="btn btn-primary">
+                    <i class="bi-plus-circle-fill"></i>
+                    Generate Random UUID
+                </button>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <button id="music-add-button" class="btn btn-success disabled">
+                    <i class="bi-check-circle-fill"></i>
+                    Add Music
+                </button>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div id="music-alert" class="alert alert-success" style="display: none">
+                hogehoge :)
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+
+</html>
