@@ -1,95 +1,73 @@
 $(function () {
-    const jacket = $("#music-jacket");
-    const uuidGenerate = $("#uuid-generate-button");
-    const add = $("#music-add-button");
+    addListener();
 
-    $("input, select").on("change", checkNull);
+    const jacketURL = $("#music-jacket");
+    const jacketCheckButton = $("#url-check-button");
+    const jacketCheck = $("#jacket-check");
+    const testButton = $("#test-button");
 
-    uuidGenerate.on("click", function () {
-        jacket.val(createUuid());
-        checkNull();
+    jacketCheckButton.on("click", function() {
+        jacketCheck.attr("src", jacketURL.val());
     });
 
-    add.on("click", function () {
-        const id = $("#music-id");
-        const title = $("#music-title");
-        const ruby = $("#music-ruby");
-        const artist = $("#music-artist");
-        const genre = $("#music-genre option:selected");
-        const version = $("#music-version option:selected");
-        const bpm = $("#music-bpm");
-
-        addMusic(id.val(), title.val(), ruby.val(), artist.val(), genre.text(), version.text(), bpm.val(), jacket.val());
+    testButton.on("click", function () {
+        checkAllNotNull();
     });
 });
 
-function createUuid(){
-    return '********-****-4***-y***-************'.replace(/[*y]/g, function(a) {
-        let r = (new Date().getTime() + Math.random() * 16) % 16 | 0, v = (a === '*') ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
+function addListener() {
+    let elements = [];
 
-function checkNull() {
-    const btn = $("#music-add-button");
-    btn.addClass("disabled");
+    elements[0]  = $("#music-id");
+    elements[1]  = $("#music-title");
+    elements[2]  = $("#music-ruby");
+    elements[3]  = $("#music-artist");
+    elements[4]  = $("#music-genre");
+    elements[5]  = $("#music-version");
+    elements[6]  = $("#music-bpm");
+    elements[7]  = $("#music-jacket");
+    elements[8]  = $("#basic-const");
+    elements[9]  = $("#advanced-const");
+    elements[10] = $("#expert-const");
+    elements[11] = $("#master-const");
+    elements[12] = $("#ultima-const");
+    elements[13] = $("#expert-nd");
+    elements[14] = $("#master-nd");
+    elements[15] = $("#ultima-nd");
 
-    const array = [
-        $("#music-id").val(),
-        $("#music-title").val(),
-        $("#music-ruby").val(),
-        $("#music-artist").val(),
-        $("#music-bpm").val(),
-    ]
-
-    for (let i in array) {
-        if (array[i].length === 0) return;
-    }
-
-    if ($("#music-genre").val().startsWith("Choose")) return;
-    if ($("#music-version").val().startsWith("Choose")) return;
-
-    const regex = new RegExp("([0-9a-f]{8})-([0-9a-f]{4})-(4[0-9a-f]{3})-([0-9a-f]{4})-([0-9a-f]{12})");
-    if (regex.test($("#music-jacket").val())) {
-        btn.removeClass("disabled");
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].on("input", checkAllNotNull);
+        elements[i].on("change", checkAllNotNull);
     }
 }
 
-function addMusic(id, title, ruby, artist, genre, version, bpm, jacket) {
-    const array = {
-        id: id,
-        title: title,
-        ruby: ruby,
-        artist: artist,
-        genre: genre,
-        version: version,
-        bpm: bpm,
-        jacket: jacket
+function checkAllNotNull() {
+    const addButton = $("#music-add-button");
+    let booleans = [];
+
+    booleans[0]  = $("#music-id").val();
+    booleans[1]  = $("#music-title").val();
+    booleans[2]  = $("#music-ruby").val();
+    booleans[3]  = $("#music-artist").val();
+    booleans[4]  = $("#music-genre").val();
+    booleans[5]  = $("#music-version").val();
+    booleans[6]  = $("#music-bpm").val();
+    booleans[7]  = $("#music-jacket").val();
+    booleans[8]  = $("#basic-const").val();
+    booleans[9]  = $("#advanced-const").val();
+    booleans[10] = $("#expert-const").val();
+    booleans[11] = $("#master-const").val();
+    booleans[12] = $("#ultima-const").val();
+    booleans[13] = $("#expert-nd").val();
+    booleans[14] = $("#master-nd").val();
+    booleans[15] = $("#ultima-nd").val();
+
+    for (let i = 0; i < booleans.length; i++) {
+        if (booleans[i].length <= 0) {
+            addButton.addClass("disabled");
+            return;
+        }
     }
 
-    $.ajax({
-        method: "POST",
-        url: "/add-music",
-        data: JSON.stringify(array),
-        contentType: "application/json"
-    }).done(function (data) {
-        console.log(JSON.stringify(data));
-        const alert = $("#music-alert");
-        alert.css("display", "inline");
-        alert.removeClass("alert-danger");
-        alert.addClass("alert-success");
-        alert.html(`
-                <i class="bi-check-circle-fill"></i>
-                楽曲の追加に成功しました
-            `);
-    }).fail(function (error) {
-        const alert = $("#music-alert");
-        alert.css("display", "inline");
-        alert.removeClass("alert-success");
-        alert.addClass("alert-danger");
-        alert.html(`
-                <i class="bi-x-square-fill"></i>
-                楽曲の追加に失敗しました
-            `);
-    });
+    addButton.removeClass("disabled");
 }

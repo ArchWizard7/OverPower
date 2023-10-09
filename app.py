@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-import secrets
 import hashlib
 from datetime import datetime
+import requests
+from PIL import Image
+import io
+import base64
 
 app = Flask(__name__)
 
@@ -16,6 +19,30 @@ app.config["MYSQL_PASSWORD"] = "BTcfrLkK1FFU"
 app.config["MYSQL_DB"] = "overpower"
 
 mysql = MySQL(app)
+
+
+def url_to_base64(url):
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        url = "http://localhost:5000/static/img/debug.png"  # 画像のURLを指定
+        response = requests.get(url)
+
+    # レスポンスから画像データを取得
+    image_data = response.content
+
+    # 画像をPillowのImageオブジェクトに変換してリサイズ
+    original_image = Image.open(io.BytesIO(image_data))
+    resized_image = original_image.resize((128, 128))
+
+    # リサイズされた画像をBase64形式に変換
+    buffered = io.BytesIO()
+    resized_image.save(buffered, format="PNG")
+    base64_image = base64.b64encode(buffered.getvalue()).decode()
+
+    # Base64形式の画像データを使って何かをする
+    # 例えば、Flaskを使ってWebアプリケーションのAPIで返すなど
+    return f"data:image/png;base64,{base64_image}"
 
 
 @app.route("/")
@@ -94,7 +121,18 @@ def signup():
 
 @app.route("/developer")
 def developer_page():
-    return render_template("developer.html")
+    msg = ""
+
+    return render_template("developer.html", msg=msg, success=False)
+
+
+@app.route("/music-list")
+def music_list():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute(f"SELECT * FROM musics")
+    musics = cursor.fetchall()
+
+    return render_template("music-list.html", musics=musics)
 
 
 @app.route("/navbar")
@@ -102,7 +140,92 @@ def navbar():
     return render_template("navbar.html")
 
 
+@app.route("/register-song", methods=["POST"])
+def register_song():
+    msg = """
+    <i class="bi-check-circle-fill"></i>
+    楽曲の挿入に成功しました
+    """
 
+    form = request.form
+
+    identifier = form["id"]
+    title = form["title"]
+    ruby = form["ruby"]
+    artist = form["artist"]
+    genre = form["genre"]
+    version = form["version"]
+    bpm = form["bpm"]
+    jacket_url = form["jacket-url"]
+    basic_const = form["basic-const"]
+    advanced_const = form["advanced-const"]
+    expert_const = form["expert-const"]
+    master_const = form["master-const"]
+    ultima_const = form["ultima-const"]
+    expert_nd = form["expert-nd"]
+    master_nd = form["master-nd"]
+    ultima_nd = form["ultima-nd"]
+
+    jacket_base64 = url_to_base64(jacket_url)
+
+    # print(form)
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # UPDATE
+    # print("[ UPDATE ]")
+    # print(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
+
+    cursor.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
+    mysql.connection.commit()
+
+    # INSERT
+    # print("[ INSERT ]")
+    # print(f"""INSERT INTO musics VALUES (
+    # '{identifier}', '{title}', '{ruby}', '{artist}', '{genre}', '{version}', '{bpm}', '{jacket_base64}',
+    # '{basic_const}', '{advanced_const}', '{expert_const}', '{master_const}', '{ultima_const}',
+    # '{expert_nd}', '{master_nd}', '{ultima_nd}'
+    # )
+    # """)
+
+    cursor.execute(f"""INSERT INTO musics VALUES (
+    '{identifier}', '{title}', '{ruby}', '{artist}', '{genre}', '{version}', '{bpm}', '{jacket_base64}',
+    '{basic_const}', '{advanced_const}', '{expert_const}', '{master_const}', '{ultima_const}',
+    '{expert_nd}', '{master_nd}', '{ultima_nd}'
+    )
+    """)
+    mysql.connection.commit()
+
+    return render_template("developer.html", msg=msg, success=True)
+
+
+@app.route("/delete-song")
+def delete_song():
+    msg = """
+    <i class="bi-check-circle-fill"></i>
+    楽曲の削除に成功しました
+    """
+
+    args = request.args
+    identifier = int(args.get("id"))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    # DELETE
+    # print("[ DELETE ]")
+    # print(f"DELETE FROM musics WHERE id = '{identifier}'")
+
+    cursor.execute(f"DELETE FROM musics WHERE id = '{identifier}'")
+    mysql.connection.commit()
+
+    # UPDATE
+    # print("[ UPDATE ]")
+    # print(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
+
+    cursor.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
+    mysql.connection.commit()
+
+    return render_template("music-list.html", msg=msg, success=True)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Music List</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        $("#navbar").load("/navbar");
+    </script>
+
+    <style>
+        td, th {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<main role="main" class="container-fluid">
+    <div class="m-3 p-3 row rounded border shadow-lg table-responsive">
+        <h1 class="mb-3">
+            <i class="bi-music-note-list"></i>
+            Music List
+        </h1>
+
+        {% if msg|length > 0 %}
+            {% if success %}
+                <div class="row mb-3">
+                    <div id="music-alert" class="alert alert-success">
+                        {{ msg|safe }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="row mb-3">
+                    <div id="music-alert" class="alert alert-warning">
+                        {{ msg|safe }}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Jacket</th>
+                <th>#</th>
+                <th>Title</th>
+                <th>Ruby</th>
+                <th>Artist</th>
+                <th>Genre</th>
+                <th>Version</th>
+                <th>BPM</th>
+                <th style="color: #00ab84">Basic Constant</th>
+                <th style="color: #ff7e00">Advanced Constant</th>
+                <th style="color: #f12929">Expert Constant</th>
+                <th style="color: #8e1be5">Master Constant</th>
+                <th style="color: #ff173d">Ultima Constant</th>
+                <th style="color: #f12929">Expert ND</th>
+                <th style="color: #8e1be5">Master ND</th>
+                <th style="color: #ff173d">Ultima ND</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in musics %}
+                <tr>
+                    <td><img src="{{ row['jacket'] }}" alt="{{ row['title'] }}" width="64px" height="64px"></td>
+                    <td>{{ row['id'] }}</td>
+                    <td>{{ row['title'] }}</td>
+                    <td>{{ row['ruby'] }}</td>
+                    <td>{{ row['artist'] }}</td>
+                    <td>{{ row['genre'] }}</td>
+                    <td>{{ row['version'] }}</td>
+                    <td>{{ row['bpm'] }}</td>
+                    <td>{{ row['basic-const'] }}</td>
+                    <td>{{ row['advanced-const'] }}</td>
+                    <td>{{ row['expert-const'] }}</td>
+                    <td>{{ row['master-const'] }}</td>
+                    <td>{{ row['ultima-const'] }}</td>
+                    <td>{{ row['expert-nd'] }}</td>
+                    <td>{{ row['master-nd'] }}</td>
+                    <td>{{ row['ultima-nd'] }}</td>
+                    <td style="text-align: center">
+                        <a class="btn btn-sm btn-danger" href="/delete-song?id={{ row['id'] }}">
+                            <i class="bi-trash3-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+
+</html>

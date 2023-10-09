@@ -7,12 +7,13 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
 
     <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../static/js/developer.js"></script>
+    <script src="{{ url_for('static', filename='js/developer.js') }}"></script>
     <script type="module">
         $("#navbar").load("/navbar");
     </script>
@@ -34,124 +35,224 @@
             Add Song
         </h2>
 
-        <div class="row mb-3">
-            <div class="col-4 mb-3">
-                <label for="music-id" class="fw-bold">
-                    <i class="bi-key-fill"></i>
-                    ID
-                </label>
-                <input id="music-id" class="form-control" type="number" min="1" step="1" placeholder="ID">
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-4 mb-3">
-                <label for="music-title" class="fw-bold">
-                    <i class="bi-tag-fill"></i>
-                    Title
-                </label>
-                <input id="music-title" class="form-control" type="text" maxlength="127" placeholder="Title">
+        <form action="/register-song" method="POST">
+            <div class="row mb-3">
+                <div class="col-4 mb-3">
+                    <label for="music-id" class="fw-bold">
+                        <i class="bi-key-fill"></i>
+                        ID
+                    </label>
+                    <input id="music-id" class="form-control" name="id" type="number" min="1" step="1" placeholder="ID">
+                </div>
             </div>
 
-            <div class="col-4 mb-3">
-                <label for="music-ruby" class="fw-bold">
-                    <i class="bi-tag-fill"></i>
-                    Ruby
-                </label>
-                <input id="music-ruby" class="form-control" type="text" maxlength="127" placeholder="Ruby">
+            <div class="row mb-3">
+                <div class="col-4 mb-3">
+                    <label for="music-title" class="fw-bold">
+                        <i class="bi-tag-fill"></i>
+                        Title
+                    </label>
+                    <input id="music-title" class="form-control" name="title" type="text" maxlength="127" placeholder="Title">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label for="music-ruby" class="fw-bold">
+                        <i class="bi-tag-fill"></i>
+                        Ruby
+                    </label>
+                    <input id="music-ruby" class="form-control" name="ruby" type="text" maxlength="127" placeholder="Ruby">
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label for="music-artist" class="fw-bold">
+                        <i class="bi-person-check-fill"></i>
+                        Artist
+                    </label>
+                    <input id="music-artist" class="form-control" name="artist" type="text" maxlength="127" placeholder="Artist">
+                </div>
             </div>
 
-            <div class="col-4 mb-3">
-                <label for="music-artist" class="fw-bold">
-                    <i class="bi-person-check-fill"></i>
-                    Artist
-                </label>
-                <input id="music-artist" class="form-control" type="text" maxlength="127" placeholder="Artist">
-            </div>
-        </div>
+            <div class="row mb-3">
+                <div class="col-4 mb-3">
+                    <label for="music-genre" class="fw-bold">
+                        <i class="bi-music-note-list"></i>
+                        Genre
+                    </label>
+                    <select id="music-genre" class="form-select" name="genre">
+                        <option selected>Choose Genre...</option>
+                        <option value="POPS&ANIME">POPS&ANIME</option>
+                        <option value="niconico">niconico</option>
+                        <option value="東方Project">東方Project</option>
+                        <option value="VARIETY">VARIETY</option>
+                        <option value="イロドリミドリ">イロドリミドリ</option>
+                        <option value="ゲキマイ">ゲキマイ</option>
+                        <option value="ORIGINAL">ORIGINAL</option>
+                        <option value="WORLD'S END">WORLD'S END</option>
+                        <option value="ULTIMA">ULTIMA</option>
+                    </select>
+                </div>
 
-        <div class="row mb-3">
-            <div class="col-4 mb-3">
-                <label for="music-genre" class="fw-bold">
+                <div class="col-4 mb-3">
+                    <label for="music-version" class="fw-bold">
+                        <i class="bi-calendar-check"></i>
+                        Version
+                    </label>
+                    <select id="music-version" class="form-select" name="version">
+                        <option selected>Choose Version...</option>
+                        <option value="CHUNITHM">CHUNITHM</option>
+                        <option value="CHUNITHM PLUS">CHUNITHM PLUS</option>
+                        <option value="AIR">AIR</option>
+                        <option value="AIR PLUS">AIR PLUS</option>
+                        <option value="STAR">STAR</option>
+                        <option value="STAR PLUS">STAR PLUS</option>
+                        <option value="AMAZON">AMAZON</option>
+                        <option value="AMAZON PLUS">AMAZON PLUS</option>
+                        <option value="CRYSTAL">CRYSTAL</option>
+                        <option value="CRYSTAL PLUS">CRYSTAL PLUS</option>
+                        <option value="PARADISE">PARADISE</option>
+                        <option value="PARADISE PLUS">PARADISE LOST</option>
+                        <option value="NEW">NEW</option>
+                        <option value="NEW PLUS">NEW PLUS</option>
+                        <option value="SUN">SUN</option>
+                        <option value="SUN PLUS">SUN PLUS</option>
+                    </select>
+                </div>
+
+                <div class="col-4 mb-3">
+                    <label for="music-bpm" class="fw-bold">
+                        <i class="bi-music-note"></i>
+                        BPM
+                    </label>
+                    <input id="music-bpm" class="form-control" name="bpm" type="number" step="1" placeholder="BPM">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="music-jacket" class="fw-bold">
                     <i class="bi-music-note-list"></i>
-                    Genre
+                    Jacket URL
                 </label>
-                <select id="music-genre" class="form-select">
-                    <option selected>Choose Genre...</option>
-                    <option value="0">POPS&ANIME</option>
-                    <option value="1">niconico</option>
-                    <option value="2">東方Project</option>
-                    <option value="3">VARIETY</option>
-                    <option value="4">イロドリミドリ</option>
-                    <option value="5">ゲキマイ</option>
-                    <option value="6">ORIGINAL</option>
-                    <option value="7">WORLD'S END</option>
-                    <option value="8">ULTIMA</option>
-                </select>
+                <div class="col-4 mb-3 input-group">
+                    <input id="music-jacket" class="form-control" name="jacket-url" type="text" placeholder="Jacket URL">
+                    <button id="url-check-button" class="btn btn-primary" type="button">
+                        <i class="bi-plus-circle-fill"></i>
+                        Check URL Image
+                    </button>
+                </div>
             </div>
 
-            <div class="col-4 mb-3">
-                <label for="music-version" class="fw-bold">
-                    <i class="bi-calendar-check"></i>
-                    Version
-                </label>
-                <select id="music-version" class="form-select">
-                    <option selected>Choose Version...</option>
-                    <option value="0">CHUNITHM</option>
-                    <option value="1">CHUNITHM PLUS</option>
-                    <option value="2">AIR</option>
-                    <option value="3">AIR PLUS</option>
-                    <option value="4">STAR</option>
-                    <option value="5">STAR PLUS</option>
-                    <option value="6">AMAZON</option>
-                    <option value="7">AMAZON PLUS</option>
-                    <option value="8">CRYSTAL</option>
-                    <option value="9">CRYSTAL PLUS</option>
-                    <option value="10">PARADISE</option>
-                    <option value="11">PARADISE LOST</option>
-                    <option value="12">NEW</option>
-                    <option value="13">NEW PLUS</option>
-                    <option value="14">SUN</option>
-                </select>
+            <hr>
+
+            <img id="jacket-check" src="{{ url_for('static', filename='img/debug.png') }}" alt="Jacket Image" width="128px" height="128px">
+
+            <hr>
+
+            <div class="row mb-3">
+                <div class="col-3">
+                    <label for="basic-const" class="fw-bold" style="color: #00ab84">
+                        <i class="bi-1-square-fill"></i>
+                        Basic Constant
+                    </label>
+                    <input id="basic-const" class="form-control" name="basic-const" type="number" step="0.1" placeholder="Basic Constant">
+                </div>
+
+                <div class="col-3">
+                    <label for="advanced-const" class="fw-bold" style="color: #ff7e00">
+                        <i class="bi-2-square-fill"></i>
+                        Advanced Constant
+                    </label>
+                    <input id="advanced-const" class="form-control" name="advanced-const" type="number" step="0.1" placeholder="Advanced Constant">
+                </div>
+
+                <div class="col-3">
+                    <label for="expert-const" class="fw-bold" style="color: #f12929">
+                        <i class="bi-3-square-fill"></i>
+                        Expert Constant
+                    </label>
+                    <input id="expert-const" class="form-control" name="expert-const" type="number" step="0.1" placeholder="Expert Constant">
+                </div>
+
+                <div class="col-3">
+                    <label for="master-const" class="fw-bold" style="color: #8e1be5">
+                        <i class="bi-4-square-fill"></i>
+                        Master Constant
+                    </label>
+                    <input id="master-const" class="form-control" name="master-const" type="number" step="0.1" placeholder="Master Constant">
+                </div>
             </div>
 
-            <div class="col-4 mb-3">
-                <label for="music-bpm" class="fw-bold">
-                    <i class="bi-music-note"></i>
-                    BPM
-                </label>
-                <input id="music-bpm" class="form-control" type="number" step="1" placeholder="BPM">
+            <div class="row mb-3">
+                <div class="col-3">
+                    <label for="ultima-const" class="fw-bold" style="color: #ff173d">
+                        <i class="bi-5-square-fill"></i>
+                        Ultima Constant
+                    </label>
+                    <input id="ultima-const" class="form-control" name="ultima-const" type="number" step="0.1" placeholder="Ultima Constant">
+                </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <label for="music-jacket" class="fw-bold">
-                <i class="bi-music-note-list"></i>
-                Jacket UUID
-            </label>
-            <div class="col-4 mb-3 input-group">
-                <input id="music-jacket" class="form-control font-monospace" type="text" maxlength="36" placeholder="Jacket UUID" disabled>
-                <button id="uuid-generate-button" class="btn btn-primary">
-                    <i class="bi-plus-circle-fill"></i>
-                    Generate Random UUID
-                </button>
-            </div>
-        </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <label for="expert-nd" class="fw-bold" style="color: #f12929">
+                        <i class="bi-pencil-fill"></i>
+                        Expert ND
+                    </label>
+                    <input id="expert-nd" class="form-control" name="expert-nd" type="text" placeholder="Expert ND">
+                </div>
 
-        <div class="row mb-3">
-            <div class="col">
-                <button id="music-add-button" class="btn btn-success disabled">
-                    <i class="bi-check-circle-fill"></i>
-                    Add Music
-                </button>
-            </div>
-        </div>
+                <div class="col-4">
+                    <label for="master-nd" class="fw-bold" style="color: #8e1be5">
+                        <i class="bi-pencil-fill"></i>
+                        Master ND
+                    </label>
+                    <input id="master-nd" class="form-control" name="master-nd" type="text" placeholder="Master ND">
+                </div>
 
-        <div class="row mb-3">
-            <div id="music-alert" class="alert alert-success" style="display: none">
-                hogehoge :)
+                <div class="col-4">
+                    <label for="ultima-nd" class="fw-bold" style="color: #ff173d">
+                        <i class="bi-pencil-fill"></i>
+                        Ultima ND
+                    </label>
+                    <input id="ultima-nd" class="form-control" name="ultima-nd" type="text" placeholder="Ultima ND">
+                </div>
             </div>
-        </div>
+
+            <hr>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <button id="test-button" class="btn btn-info" type="button">
+                        <i class="bi-terminal-plus"></i>
+                        Test Button
+                    </button>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <button id="music-add-button" class="btn btn-success disabled" type="submit">
+                        <i class="bi-check-circle-fill"></i>
+                        Add Music
+                    </button>
+                </div>
+            </div>
+
+            {% if msg|length > 0 %}
+                {% if success %}
+                    <div class="row mb-3">
+                        <div id="music-alert" class="alert alert-success">
+                            {{ msg|safe }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row mb-3">
+                        <div id="music-alert" class="alert alert-warning">
+                            {{ msg|safe }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </form>
     </div>
 </main>
 

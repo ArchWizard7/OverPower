@@ -28,6 +28,12 @@
                         Developer
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('music_list') }}">
+                        <i class="bi-music-note-list"></i>
+                        Music List
+                    </a>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 {% if session.username|length > 0 %}
