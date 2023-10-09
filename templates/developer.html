@@ -19,9 +19,9 @@
     </script>
 </head>
 
-<body>
+<body style="padding-top: 56px">
 
-<nav id="navbar"></nav>
+<nav id="navbar" style="position: fixed; width: 100%; top: 0; left: 0; z-index: 1000"></nav>
 
 <main role="main" class="p-3 container-fluid">
     <h1>
@@ -42,7 +42,7 @@
                         <i class="bi-key-fill"></i>
                         ID
                     </label>
-                    <input id="music-id" class="form-control" name="id" type="number" min="1" step="1" placeholder="ID">
+                    <input required id="music-id" class="form-control" name="id" type="number" min="1" step="1" placeholder="ID">
                 </div>
             </div>
 
@@ -52,7 +52,7 @@
                         <i class="bi-tag-fill"></i>
                         Title
                     </label>
-                    <input id="music-title" class="form-control" name="title" type="text" maxlength="127" placeholder="Title">
+                    <input required id="music-title" class="form-control" name="title" type="text" maxlength="127" placeholder="Title">
                 </div>
 
                 <div class="col-4 mb-3">
@@ -86,7 +86,7 @@
                         <i class="bi-person-check-fill"></i>
                         Artist
                     </label>
-                    <input id="music-artist" class="form-control" name="artist" type="text" maxlength="127" placeholder="Artist">
+                    <input required id="music-artist" class="form-control" name="artist" type="text" maxlength="127" placeholder="Artist">
                 </div>
             </div>
 
@@ -141,7 +141,7 @@
                         <i class="bi-music-note"></i>
                         BPM
                     </label>
-                    <input id="music-bpm" class="form-control" name="bpm" type="number" step="1" placeholder="BPM">
+                    <input required id="music-bpm" class="form-control" name="bpm" type="number" step="1" placeholder="BPM">
                 </div>
             </div>
 
@@ -151,7 +151,7 @@
                     Jacket URL
                 </label>
                 <div class="col-4 mb-3 input-group">
-                    <input id="music-jacket" class="form-control" name="jacket-url" type="text" placeholder="Jacket URL">
+                    <input required id="music-jacket" class="form-control" name="jacket-url" type="text" placeholder="Jacket URL">
                     <button id="url-check-button" class="btn btn-primary" type="button">
                         <i class="bi-plus-circle-fill"></i>
                         Check URL Image
@@ -171,7 +171,7 @@
                         <i class="bi-1-square-fill"></i>
                         Basic Constant
                     </label>
-                    <input id="basic-const" class="form-control" name="basic-const" type="number" step="0.1" placeholder="Basic Constant">
+                    <input required id="basic-const" class="form-control" name="basic-const" type="number" step="0.1" placeholder="Basic Constant">
                 </div>
 
                 <div class="col-3">
@@ -179,7 +179,7 @@
                         <i class="bi-2-square-fill"></i>
                         Advanced Constant
                     </label>
-                    <input id="advanced-const" class="form-control" name="advanced-const" type="number" step="0.1" placeholder="Advanced Constant">
+                    <input required id="advanced-const" class="form-control" name="advanced-const" type="number" step="0.1" placeholder="Advanced Constant">
                 </div>
 
                 <div class="col-3">
@@ -187,7 +187,7 @@
                         <i class="bi-3-square-fill"></i>
                         Expert Constant
                     </label>
-                    <input id="expert-const" class="form-control" name="expert-const" type="number" step="0.1" placeholder="Expert Constant">
+                    <input required id="expert-const" class="form-control" name="expert-const" type="number" step="0.1" placeholder="Expert Constant">
                 </div>
 
                 <div class="col-3">
@@ -195,7 +195,7 @@
                         <i class="bi-4-square-fill"></i>
                         Master Constant
                     </label>
-                    <input id="master-const" class="form-control" name="master-const" type="number" step="0.1" placeholder="Master Constant">
+                    <input required id="master-const" class="form-control" name="master-const" type="number" step="0.1" placeholder="Master Constant">
                 </div>
             </div>
 
@@ -205,7 +205,7 @@
                         <i class="bi-5-square-fill"></i>
                         Ultima Constant
                     </label>
-                    <input id="ultima-const" class="form-control" name="ultima-const" type="number" step="0.1" placeholder="Ultima Constant">
+                    <input required id="ultima-const" class="form-control" name="ultima-const" type="number" step="0.1" placeholder="Ultima Constant">
                 </div>
             </div>
 
@@ -215,7 +215,7 @@
                         <i class="bi-pencil-fill"></i>
                         Expert ND
                     </label>
-                    <input id="expert-nd" class="form-control" name="expert-nd" type="text" placeholder="Expert ND">
+                    <input required id="expert-nd" class="form-control" name="expert-nd" type="text" placeholder="Expert ND">
                 </div>
 
                 <div class="col-4">
@@ -223,7 +223,7 @@
                         <i class="bi-pencil-fill"></i>
                         Master ND
                     </label>
-                    <input id="master-nd" class="form-control" name="master-nd" type="text" placeholder="Master ND">
+                    <input required id="master-nd" class="form-control" name="master-nd" type="text" placeholder="Master ND">
                 </div>
 
                 <div class="col-4">
@@ -231,7 +231,7 @@
                         <i class="bi-pencil-fill"></i>
                         Ultima ND
                     </label>
-                    <input id="ultima-nd" class="form-control" name="ultima-nd" type="text" placeholder="Ultima ND">
+                    <input required id="ultima-nd" class="form-control" name="ultima-nd" type="text" placeholder="Ultima ND">
                 </div>
             </div>
 
