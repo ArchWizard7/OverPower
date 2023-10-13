@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session
-import mysql.connector as mydb
+from flask_mysqldb import MySQL
 import hashlib
 from datetime import datetime
 import requests
@@ -12,17 +12,13 @@ app = Flask(__name__)
 # app.secret_key = secrets.token_hex(32)
 app.secret_key = "0123456789ABCDEF0123456789ABCDEF"
 
-conn = mydb.connect(
-    host="localhost",
-    port=3306,
-    user="root",
-    password="BTcfrLkK1FFU",
-    database="overpower"
-)
+app.config["MYSQL_HOST"] = "localhost"
+app.config["MYSQL_USER"] = "root"
+app.config["MYSQL_PASSWORD"] = "BTcfrLkK1FFU"
+app.config["MYSQL_DB"] = "overpower"
+app.config["MYSQL_CURSORCLASS"] = "DictCursor"
 
-conn.ping(reconnect=True)
-
-print(conn.is_connected())
+mysql = MySQL(app)
 
 
 def url_to_base64(url):
@@ -55,7 +51,6 @@ def index():
     return render_template("index.html")
 
 
-# noinspection PyTypeChecker
 @app.route("/login", methods=["GET", "POST"])
 def login():
     msg = ""
@@ -68,7 +63,7 @@ def login():
         hash_obj.update(password.encode("utf-8"))
         hashed = hash_obj.hexdigest()
 
-        cur = conn.cursor(dictionary=True)
+        cur = mysql.connection.cursor()
         cur.execute(f"SELECT * FROM users WHERE username = '{username}' AND password = '{hashed}'")
         user = cur.fetchone()
 
@@ -103,7 +98,7 @@ def signup():
         hash_obj.update(password.encode("utf-8"))
         hashed = hash_obj.hexdigest()
 
-        cur = conn.cursor(dictionary=True)
+        cur = mysql.connection.cursor()
         cur.execute(f"SELECT * FROM users WHERE username = '{username}' OR email = '{email}'")
         user = cur.fetchone()
 
@@ -114,7 +109,7 @@ def signup():
             created_at = now.strftime('%Y/%m/%d %H:%M:%S')
 
             cur.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
-            conn.commit()
+            mysql.connection.commit()
 
             session["loggedin"] = True
             session["username"] = username
@@ -133,19 +128,8 @@ def developer_page():
 
 @app.route("/music-list")
 def music_list():
-    args = request.args
-
-    # ページ番号
-    num = 1
-
-    if args.get("p") is not None:
-        num = int(args.get("p"))
-
-    limit = 100
-    offset = (num - 1) * 100
-
-    cur = conn.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM musics LIMIT {limit} OFFSET {offset}")
+    cur = mysql.connection.cursor()
+    cur.execute(f"SELECT * FROM musics")
     musics = cur.fetchall()
 
     return render_template("music-list.html", musics=musics)
@@ -186,14 +170,14 @@ def register_song():
 
     # print(form)
 
-    cur = conn.cursor(dictionary=True)
+    cur = mysql.connection.cursor()
 
     # UPDATE
     # print("[ UPDATE ]")
     # print(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
 
     cur.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
-    conn.commit()
+    mysql.connection.commit()
 
     # INSERT
     # print("[ INSERT ]")
@@ -210,7 +194,7 @@ def register_song():
     '{expert_nd}', '{master_nd}', '{ultima_nd}'
     )
     """)
-    conn.commit()
+    mysql.connection.commit()
 
     return render_template("developer.html", msg=msg, success=True)
 
@@ -225,21 +209,21 @@ def delete_song():
     args = request.args
     identifier = int(args.get("id"))
 
-    cur = conn.cursor(dictionary=True)
+    cur = mysql.connection.cursor()
 
     # DELETE
     # print("[ DELETE ]")
     # print(f"DELETE FROM musics WHERE id = '{identifier}'")
 
     cur.execute(f"DELETE FROM musics WHERE id = '{identifier}'")
-    conn.commit()
+    mysql.connection.commit()
 
     # UPDATE
     # print("[ UPDATE ]")
     # print(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
 
     cur.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
-    conn.commit()
+    mysql.connection.commit()
 
     return render_template("music-list.html", msg=msg, success=True)
 
