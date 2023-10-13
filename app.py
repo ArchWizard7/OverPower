@@ -5,6 +5,7 @@ from datetime import datetime
 import requests
 from PIL import Image
 import io
+import json
 import base64
 
 app = Flask(__name__)
@@ -148,7 +149,7 @@ def music_list():
     cur.execute(f"SELECT * FROM musics LIMIT {limit} OFFSET {offset}")
     musics = cur.fetchall()
 
-    return render_template("music-list.html", musics=musics)
+    return render_template("music-list.html", musics=musics, num=num, max_page=13)
 
 
 @app.route("/navbar")
@@ -156,8 +157,8 @@ def navbar():
     return render_template("navbar.html")
 
 
-@app.route("/register-song", methods=["POST"])
-def register_song():
+@app.route("/register-music", methods=["POST"])
+def register_music():
     msg = """
     <i class="bi-check-circle-fill"></i>
     楽曲の挿入に成功しました
@@ -215,8 +216,8 @@ def register_song():
     return render_template("developer.html", msg=msg, success=True)
 
 
-@app.route("/delete-song")
-def delete_song():
+@app.route("/delete-music")
+def delete_music():
     msg = """
     <i class="bi-check-circle-fill"></i>
     楽曲の削除に成功しました
@@ -242,6 +243,29 @@ def delete_song():
     conn.commit()
 
     return render_template("music-list.html", msg=msg, success=True)
+
+
+@app.route("/get-musics")
+def get_musics():
+    args = request.args
+
+    # ページ番号
+    num = 1
+
+    if args.get("p") is not None:
+        num = int(args.get("p"))
+
+    limit = 100
+    offset = (num - 1) * 100
+
+    cur = conn.cursor(dictionary=True)
+    cur.execute(f"SELECT * FROM musics LIMIT {limit} OFFSET {offset}")
+    musics = cur.fetchall()
+    json_data = json.dumps(musics, indent=4, ensure_ascii=False)
+
+    return json_data, 200, {
+        "Content-Type": "application/json"
+    }
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import mysql.connector as mydb
+import json
 
 conn = mydb.connect(
     host="localhost",
@@ -9,11 +10,9 @@ conn = mydb.connect(
 )
 
 cur = conn.cursor(dictionary=True)
-cur.execute("SELECT * FROM musics LIMIT 1;")
+cur.execute("SELECT id, title FROM musics LIMIT 100;")
 data = cur.fetchall()
 
-print(data)
+json_data = json.dumps(data, indent=4, ensure_ascii=False)
 
-for row in data:
-    print(row)
-
+print(json_data)
