@@ -28,7 +28,7 @@ $(function() {
             for (let i = 0; i < data.length; i++) {
                 const row = $(`
                     <tr>
-                        <td><img src="${ data[i]['jacket'] }" alt="${ data[i]['title'] }" width="64px" height="64px"></td>
+                        <td><img src="${ data[i]['jacket'] }" alt="${ data[i]['title'] }" width="64px" height="64px" loading="lazy"></td>
                         <td>${ data[i]['id'] }</td>
                         <td>${ data[i]['title'] }</td>
                         <td>${ data[i]['ruby'] }</td>
@@ -45,7 +45,7 @@ $(function() {
                         <td>${ data[i]['master-nd'] }</td>
                         <td>${ data[i]['ultima-nd'] }</td>
                         <td style="text-align: center">
-                            <a class="btn btn-sm btn-danger" href="/delete-song?id=${data[i]['id']}">
+                            <a class="btn btn-sm btn-danger" href="/delete-music?id=${data[i]['id']}">
                                 <i class="bi-trash3-fill"></i>
                             </a>
                         </td>

@@ -93,7 +93,7 @@
                 <tbody>
                 {% for row in musics %}
                     <tr>
-                        <td><img src="{{ row['jacket'] }}" alt="{{ row['title'] }}" width="64px" height="64px"></td>
+                        <td><img src="{{ row['jacket'] }}" alt="{{ row['title'] }}" width="64px" height="64px" loading="lazy"></td>
                         <td>{{ row['id'] }}</td>
                         <td>{{ row['title'] }}</td>
                         <td>{{ row['ruby'] }}</td>

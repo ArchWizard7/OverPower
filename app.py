@@ -146,7 +146,7 @@ def music_list():
     offset = (num - 1) * 100
 
     cur = conn.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM musics LIMIT {limit} OFFSET {offset}")
+    cur.execute(f"SELECT * FROM musics ORDER BY id LIMIT {limit} OFFSET {offset}")
     musics = cur.fetchall()
 
     return render_template("music-list.html", musics=musics, num=num, max_page=13)
@@ -239,10 +239,10 @@ def delete_music():
     # print("[ UPDATE ]")
     # print(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
 
-    cur.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
+    cur.execute(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
     conn.commit()
 
-    return render_template("music-list.html", msg=msg, success=True)
+    return render_template("music-list.html", msg=msg, success=True, num=1, max_page=13)
 
 
 @app.route("/get-musics")
@@ -259,7 +259,7 @@ def get_musics():
     offset = (num - 1) * 100
 
     cur = conn.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM musics LIMIT {limit} OFFSET {offset}")
+    cur.execute(f"SELECT * FROM musics ORDER BY id LIMIT {limit} OFFSET {offset}")
     musics = cur.fetchall()
     json_data = json.dumps(musics, indent=4, ensure_ascii=False)
 
