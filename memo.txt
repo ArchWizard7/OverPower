@@ -1,0 +1,15 @@
+[CLEAR RAMP]
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_failed.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_clear.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_hard.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_absolute.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_absolutep.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_catastrophy.png
+
+[AJ/FC]
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullcombo.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_alljustice.png
+
+[FCH]
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullchain.png
+https://new.chunithm-net.com/chuni-mobile/html/mobile/images/icon_fullchain2.png

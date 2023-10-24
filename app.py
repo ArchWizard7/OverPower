@@ -115,6 +115,7 @@ def signup():
             created_at = now.strftime('%Y/%m/%d %H:%M:%S')
 
             cur.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
+            cur.execute(f"CREATE TABLE {username.lower()} LIKE user_template")
             conn.commit()
 
             session["loggedin"] = True
