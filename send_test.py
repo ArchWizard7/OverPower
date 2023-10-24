@@ -68,11 +68,11 @@ def update_database(username, difficulty, html_body):
 
 
 difficulties = [
-    "BASIC",
-    "ADVANCED",
-    "EXPERT",
-    "MASTER",
-    "ULTIMA",
+    "BAS",
+    "ADV",
+    "EXP",
+    "MAS",
+    "ULT",
 ]
 
 for difficulty in difficulties:
