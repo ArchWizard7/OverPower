@@ -213,6 +213,7 @@ def signup():
             cur.execute(f"CREATE TABLE {username} LIKE user_template")
 
             cur.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
+            cur.execute(f"CREATE TABLE {username.lower()} LIKE user_template")
             conn.commit()
 
             session["loggedin"] = True
