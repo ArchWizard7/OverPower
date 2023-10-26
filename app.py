@@ -7,12 +7,13 @@ from PIL import Image
 import io
 import json
 import base64
+from decimal import Decimal
 
 app = Flask(__name__)
 
 # app.secret_key = secrets.token_hex(32)
 # app.secret_key = "0123456789ABCDEF0123456789ABCDEF"
-app.secret_key = "11451419114514191145141911451419"
+app.secret_key = "01839749127492797979537903792750"
 
 conn = mydb.connect(
     host="localhost",
@@ -53,27 +54,34 @@ def url_to_base64(url):
 
 def rating(const, score):
     if score >= 1009000:
-        return const + 2.15
+        return Decimal(const) + Decimal(2.15)
     elif 1007500 <= score <= 1008999:
-        return (const + 2.0) + ((score - 1007500) // 100 / 100)
+        return (Decimal(const) + Decimal(2.0)) + ((Decimal(score) - Decimal(1007500)) // 100 / 100)
     elif 1005000 <= score <= 1007499:
-        return (const + 1.5) + ((score - 1005000) // 50 / 100)
+        return (Decimal(const) + Decimal(1.5)) + ((Decimal(score) - Decimal(1005000)) // 50 / 100)
     elif 1000000 <= score <= 1004999:
-        return (const + 1.0) + ((score - 1000000) // 100 / 100)
+        return (Decimal(const) + Decimal(1.0)) + ((Decimal(score) - Decimal(1000000)) // 100 / 100)
     elif 990000 <= score <= 999999:
-        return (const + 0.6) + ((score - 990000) // 250 / 100)
+        return (Decimal(const) + Decimal(0.6)) + ((Decimal(score) - Decimal(990000)) // 250 / 100)
     elif 975000 <= score <= 989999:
-        return const + ((score - 975000) // 250 / 100)
+        return Decimal(const) + ((Decimal(score) - Decimal(975000)) // 250 / 100)
     elif 925000 <= score <= 974999:
-        return (const - 3.0) + ((score - 925000) // (5000 / 3) / 100)
+        return (Decimal(const) - Decimal(3.0)) + ((Decimal(score) - Decimal(925000)) // (Decimal(5000) / Decimal(3)) / 100)
     elif 900000 <= score <= 924999:
-        return (const - 5.0) + ((score - 900000) // 125 / 100)
+        return (Decimal(const) - Decimal(5.0)) + ((Decimal(score) - Decimal(900000)) // 125 / 100)
     elif 800000 <= score <= 899999:
-        return (const - 5.0) * (0.5 + (score - 800000) / 200000)
+        return (Decimal(const) - Decimal(5.0)) * (Decimal(0.5) + (Decimal(score) - Decimal(800000)) / Decimal(200000))
     elif 500000 <= score <= 799999:
-        return (const - 5.0) * (score - 500000) / 600000
+        return (Decimal(const) - Decimal(5.0)) * (Decimal(score) - Decimal(500000)) / Decimal(600000)
     else:
         return 0
+
+
+def diff_format(diff):
+    if (diff * 10) % 10 >= 5:
+        return f"{int(diff)}+"
+    else:
+        return f"{int(diff)}"
 
 
 @app.route("/")
@@ -83,40 +91,46 @@ def index():
         username = session["username"]
 
         total_op = {
-            "BAS": 0.0,
-            "ADV": 0.0,
-            "EXP": 0.0,
-            "MAS": 0.0,
-            "ULT": 0.0
+            "BAS": 0.0, "ADV": 0.0, "EXP": 0.0, "MAS": 0.0, "ULT": 0.0,
+            "POPS&ANIME": 0.0, "niconico": 0.0, "東方Project": 0.0, "VARIETY": 0.0, "イロドリミドリ": 0.0, "ゲキマイ": 0.0, "ORIGINAL": 0.0,
+            "10": 0.0, "10+": 0.0, "11": 0.0, "11+": 0.0, "12": 0.0, "12+": 0.0, "13": 0.0, "13+": 0.0, "14": 0.0, "14+": 0.0, "15": 0.0,
+            "A～G": 0.0, "H～N": 0.0, "O～U": 0.0, "V～Z": 0.0, "あ行": 0.0, "か行": 0.0, "さ行": 0.0, "た行": 0.0, "な行": 0.0, "は行": 0.0, "ま行": 0.0, "や行": 0.0, "ら行": 0.0, "わ行": 0.0, "数字": 0.0
         }
 
         max_op = {
-            "BAS": 0.0,
-            "ADV": 0.0,
-            "EXP": 0.0,
-            "MAS": 0.0,
-            "ULT": 0.0
+            "BAS": 0.0, "ADV": 0.0, "EXP": 0.0, "MAS": 0.0, "ULT": 0.0,
+            "POPS&ANIME": 0.0, "niconico": 0.0, "東方Project": 0.0, "VARIETY": 0.0, "イロドリミドリ": 0.0, "ゲキマイ": 0.0, "ORIGINAL": 0.0,
+            "10": 0.0, "10+": 0.0, "11": 0.0, "11+": 0.0, "12": 0.0, "12+": 0.0, "13": 0.0, "13+": 0.0, "14": 0.0, "14+": 0.0, "15": 0.0,
+            "A～G": 0.0, "H～N": 0.0, "O～U": 0.0, "V～Z": 0.0, "あ行": 0.0, "か行": 0.0, "さ行": 0.0, "た行": 0.0, "な行": 0.0, "は行": 0.0, "ま行": 0.0, "や行": 0.0, "ら行": 0.0, "わ行": 0.0, "数字": 0.0
         }
 
-        music_const_table = {}
+        title_to_genre = {}
+        title_to_const = {}
+        title_to_ruby = {}
 
         cursor = conn.cursor(dictionary=True)
         cursor.execute(f"SELECT * FROM musics")
         musics = cursor.fetchall()
 
         for row in musics:
-            music_const_table[f"{row['title']}_BAS"] = row["basic-const"]
-            music_const_table[f"{row['title']}_ADV"] = row["advanced-const"]
-            music_const_table[f"{row['title']}_EXP"] = row["expert-const"]
-            music_const_table[f"{row['title']}_MAS"] = row["master-const"]
-            music_const_table[f"{row['title']}_ULT"] = row["ultima-const"]
+            title = row['title']
+
+            title_to_genre[title] = row["genre"]
+            title_to_ruby[title] = row["ruby"]
+
+            title_to_const[f"{title}_BAS"] = row["basic-const"]
+            title_to_const[f"{title}_ADV"] = row["advanced-const"]
+            title_to_const[f"{title}_EXP"] = row["expert-const"]
+            title_to_const[f"{title}_MAS"] = row["master-const"]
+            title_to_const[f"{title}_ULT"] = row["ultima-const"]
 
         cursor.execute(f"SELECT * FROM {username.lower()}")
         results = cursor.fetchall()
 
         # print(results)
 
-        i = 0
+        if len(results) <= 0:
+            return render_template("no_data.html", msg="データが存在しません", level="danger")
 
         for row in results:
             title = str(row["id"])
@@ -125,24 +139,41 @@ def index():
             ramp = str(row["ramp"])
             locked = int(row["locked"])
 
-            print(title)
+            max_temp = (title_to_const[title] + 3) * 5
+            max_op[difficulty] += max_temp
 
             if locked == 0:
-                max_op[difficulty] += (music_const_table[title] + 3) * 5
-
+                additional = 0.0
                 additional1 = 0.0
 
-                if ramp == "GOLD":
+                if ramp == "FC":
                     additional1 = 0.5
-                elif ramp == "PLATINUM":
+                elif ramp == "AJ":
                     additional1 = 1.0
 
                 if score >= 1010000:
-                    total_op[difficulty] += (music_const_table[title] + 3) * 5
+                    additional = (title_to_const[title] + 3) * 5
                 elif 1007501 <= score <= 1009999:
-                    total_op[difficulty] += (music_const_table[title] + 2) * 5 + additional1 + ((score - 1007500) * 0.0015)
-                else:
-                    total_op[difficulty] += (rating(music_const_table[title], score) * 5) + additional1
+                    additional = (title_to_const[title] + 2) * 5 + additional1 + ((score - 1007500) * 0.0015)
+                elif 975000 <= score <= 1007500:
+                    additional = (float(rating(title_to_const[title], score)) * 5) + additional1
+
+                if "_MAS" in title or "_ULT" in title:
+                    title2 = title[:(len(title) - 4)]
+                    genre = title_to_genre[title2]
+                    diff = diff_format(title_to_const[title])
+                    ruby = title_to_ruby[title2]
+
+                    max_op[genre] += max_temp
+                    max_op[diff] += max_temp
+                    max_op[ruby] += max_temp
+                    total_op[genre] += additional
+                    total_op[diff] += additional
+                    total_op[ruby] += additional
+
+                    print(f"{title} = {additional}")
+
+                total_op[difficulty] += additional
 
         print(total_op)
         print(max_op)
@@ -152,7 +183,6 @@ def index():
         return render_template("index.html")
 
 
-# noinspection PyTypeChecker
 @app.route("/login", methods=["GET", "POST"])
 def login():
     msg = ""
@@ -172,7 +202,6 @@ def login():
         if user:
             session["loggedin"] = True
             session["username"] = user["username"]
-            msg = "ログインに成功しました"
             return redirect(url_for("index"))
         else:
             msg = "メールアドレス もしくは パスワード が間違っています"
@@ -211,15 +240,12 @@ def signup():
             created_at = now.strftime('%Y/%m/%d %H:%M:%S')
 
             cur.execute(f"CREATE TABLE {username} LIKE user_template")
-
             cur.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
-            cur.execute(f"CREATE TABLE {username.lower()} LIKE user_template")
             conn.commit()
 
             session["loggedin"] = True
             session["username"] = username
-            msg = "アカウント登録に成功しました"
-            return render_template("index.html", msg=msg, level="success")
+            return redirect(url_for("index"))
 
     return render_template("signup.html", msg=msg, level="danger")
 
