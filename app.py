@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, url_for, redirect
 import mysql.connector as mydb
 import hashlib
 from datetime import datetime
@@ -11,7 +11,8 @@ import base64
 app = Flask(__name__)
 
 # app.secret_key = secrets.token_hex(32)
-app.secret_key = "0123456789ABCDEF0123456789ABCDEF"
+# app.secret_key = "0123456789ABCDEF0123456789ABCDEF"
+app.secret_key = "11451419114514191145141911451419"
 
 conn = mydb.connect(
     host="localhost",
@@ -50,10 +51,105 @@ def url_to_base64(url):
     return f"data:image/png;base64,{base64_image}"
 
 
+def rating(const, score):
+    if score >= 1009000:
+        return const + 2.15
+    elif 1007500 <= score <= 1008999:
+        return (const + 2.0) + ((score - 1007500) // 100 / 100)
+    elif 1005000 <= score <= 1007499:
+        return (const + 1.5) + ((score - 1005000) // 50 / 100)
+    elif 1000000 <= score <= 1004999:
+        return (const + 1.0) + ((score - 1000000) // 100 / 100)
+    elif 990000 <= score <= 999999:
+        return (const + 0.6) + ((score - 990000) // 250 / 100)
+    elif 975000 <= score <= 989999:
+        return const + ((score - 975000) // 250 / 100)
+    elif 925000 <= score <= 974999:
+        return (const - 3.0) + ((score - 925000) // (5000 / 3) / 100)
+    elif 900000 <= score <= 924999:
+        return (const - 5.0) + ((score - 900000) // 125 / 100)
+    elif 800000 <= score <= 899999:
+        return (const - 5.0) * (0.5 + (score - 800000) / 200000)
+    elif 500000 <= score <= 799999:
+        return (const - 5.0) * (score - 500000) / 600000
+    else:
+        return 0
+
+
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("index.html")
+    try:
+        username = session["username"]
+
+        total_op = {
+            "BAS": 0.0,
+            "ADV": 0.0,
+            "EXP": 0.0,
+            "MAS": 0.0,
+            "ULT": 0.0
+        }
+
+        max_op = {
+            "BAS": 0.0,
+            "ADV": 0.0,
+            "EXP": 0.0,
+            "MAS": 0.0,
+            "ULT": 0.0
+        }
+
+        music_const_table = {}
+
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(f"SELECT * FROM musics")
+        musics = cursor.fetchall()
+
+        for row in musics:
+            music_const_table[f"{row['title']}_BAS"] = row["basic-const"]
+            music_const_table[f"{row['title']}_ADV"] = row["advanced-const"]
+            music_const_table[f"{row['title']}_EXP"] = row["expert-const"]
+            music_const_table[f"{row['title']}_MAS"] = row["master-const"]
+            music_const_table[f"{row['title']}_ULT"] = row["ultima-const"]
+
+        cursor.execute(f"SELECT * FROM {username.lower()}")
+        results = cursor.fetchall()
+
+        # print(results)
+
+        i = 0
+
+        for row in results:
+            title = str(row["id"])
+            difficulty = str(title[(len(title) - 3):])
+            score = int(row["score"])
+            ramp = str(row["ramp"])
+            locked = int(row["locked"])
+
+            print(title)
+
+            if locked == 0:
+                max_op[difficulty] += (music_const_table[title] + 3) * 5
+
+                additional1 = 0.0
+
+                if ramp == "GOLD":
+                    additional1 = 0.5
+                elif ramp == "PLATINUM":
+                    additional1 = 1.0
+
+                if score >= 1010000:
+                    total_op[difficulty] += (music_const_table[title] + 3) * 5
+                elif 1007501 <= score <= 1009999:
+                    total_op[difficulty] += (music_const_table[title] + 2) * 5 + additional1 + ((score - 1007500) * 0.0015)
+                else:
+                    total_op[difficulty] += (rating(music_const_table[title], score) * 5) + additional1
+
+        print(total_op)
+        print(max_op)
+
+        return render_template("index.html", total_op=total_op, max_op=max_op)
+    except KeyError:
+        return render_template("index.html")
 
 
 # noinspection PyTypeChecker
@@ -77,7 +173,7 @@ def login():
             session["loggedin"] = True
             session["username"] = user["username"]
             msg = "ログインに成功しました"
-            return render_template("index.html", msg=msg, level="success")
+            return redirect(url_for("index"))
         else:
             msg = "メールアドレス もしくは パスワード が間違っています"
 
@@ -113,6 +209,8 @@ def signup():
         else:
             now = datetime.now()
             created_at = now.strftime('%Y/%m/%d %H:%M:%S')
+
+            cur.execute(f"CREATE TABLE {username} LIKE user_template")
 
             cur.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
             conn.commit()

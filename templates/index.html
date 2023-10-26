@@ -39,6 +39,44 @@
 
     <div class="m-3 p-3 row rounded border shadow-lg">
         <h1>OverPower</h1>
+
+        {% if session.username|length > 0 %}
+            <div class="row">
+                <h5 style="color: #00ab84">
+                    <i class="bi-1-square-fill"></i>
+                    BASIC OverPower
+                </h5>
+                <p>{{ total_op["BAS"] }} / {{ max_op["BAS"] }} ({{ total_op["BAS"] / max_op["BAS"] * 100 }} %)</p>
+            </div>
+            <div class="row">
+                <h5 style="color: #ff7e00">
+                    <i class="bi-2-square-fill"></i>
+                    ADVANCED OverPower
+                </h5>
+                <p>{{ total_op["ADV"] }} / {{ max_op["ADV"] }} ({{ total_op["ADV"] / max_op["ADV"] * 100 }} %)</p>
+            </div>
+            <div class="row">
+                <h5 style="color: #f12929">
+                    <i class="bi-3-square-fill"></i>
+                    EXPERT OverPower
+                </h5>
+                <p>{{ total_op["EXP"] }} / {{ max_op["EXP"] }} ({{ total_op["EXP"] / max_op["EXP"] * 100 }} %)</p>
+            </div>
+            <div class="row">
+                <h5 style="color: #8e1be5">
+                    <i class="bi-4-square-fill"></i>
+                    MASTER OverPower
+                </h5>
+                <p>{{ total_op["MAS"] }} / {{ max_op["MAS"] }} ({{ total_op["MAS"] / max_op["MAS"] * 100 }} %)</p>
+            </div>
+            <div class="row">
+                <h5 style="color: #ff173d">
+                    <i class="bi-5-square-fill"></i>
+                    ULTIMA OverPower
+                </h5>
+                <p>{{ total_op["ULT"] }} / {{ max_op["ULT"] }} ({{ total_op["ULT"] / max_op["ULT"] * 100 }} %)</p>
+            </div>
+        {% endif %}
     </div>
 </main>
 
