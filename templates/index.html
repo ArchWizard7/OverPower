@@ -87,8 +87,8 @@
                         <i class="bi-6-square-fill"></i>
                         POSSESSION OverPower
                     </h5>
-                    <p>{{ (total_op["MAS"] + total_op["ULT"]) | round(4)  }} / {{ (max_op["MAS"] + max_op["ULT"]) | round(4) }}</p>
-                    <p>({{ ((total_op["MAS"] + total_op["ULT"]) / (max_op["MAS"] + max_op["ULT"]) * 100) | round(4) }} %)</p>
+                    <p>{{ total_op["POSSESSION"] | round(4) }} / {{ max_op["POSSESSION"] | round(4) }}</p>
+                    <p>({{ (total_op["POSSESSION"] / max_op["POSSESSION"] * 100) | round(4) }} %)</p>
                 </div>
             </div>
             <div class="row mb-3">

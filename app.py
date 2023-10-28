@@ -6,6 +6,7 @@ import requests
 from PIL import Image
 import io
 import json
+import math
 import base64
 from decimal import Decimal
 
@@ -56,23 +57,23 @@ def rating(const, score):
     if score >= 1009000:
         return Decimal(const) + Decimal(2.15)
     elif 1007500 <= score <= 1008999:
-        return (Decimal(const) + Decimal(2.0)) + ((Decimal(score) - Decimal(1007500)) // 100 / 100)
+        return (Decimal(const) + Decimal(2.0)) + ((Decimal(score) - Decimal(1007500)) / 10000)
     elif 1005000 <= score <= 1007499:
-        return (Decimal(const) + Decimal(1.5)) + ((Decimal(score) - Decimal(1005000)) // 50 / 100)
+        return (Decimal(const) + Decimal(1.5)) + ((Decimal(score) - Decimal(1005000)) / 5000)
     elif 1000000 <= score <= 1004999:
-        return (Decimal(const) + Decimal(1.0)) + ((Decimal(score) - Decimal(1000000)) // 100 / 100)
+        return (Decimal(const) + Decimal(1.0)) + ((Decimal(score) - Decimal(1000000)) / 10000)
     elif 990000 <= score <= 999999:
-        return (Decimal(const) + Decimal(0.6)) + ((Decimal(score) - Decimal(990000)) // 250 / 100)
+        return (Decimal(const) + Decimal(0.6)) + ((Decimal(score) - Decimal(990000)) / 25000)
     elif 975000 <= score <= 989999:
-        return Decimal(const) + ((Decimal(score) - Decimal(975000)) // 250 / 100)
+        return Decimal(const) + ((Decimal(score) - Decimal(975000)) / 25000)
     elif 925000 <= score <= 974999:
-        return (Decimal(const) - Decimal(3.0)) + ((Decimal(score) - Decimal(925000)) // (Decimal(5000) / Decimal(3)) / 100)
+        return (Decimal(const) - Decimal(3.0)) + ((Decimal(score) - Decimal(925000)) / (Decimal(50000) / Decimal(3)))
     elif 900000 <= score <= 924999:
-        return (Decimal(const) - Decimal(5.0)) + ((Decimal(score) - Decimal(900000)) // 125 / 100)
+        return (Decimal(const) - Decimal(5.0)) + ((Decimal(score) - Decimal(900000)) / 12500)
     elif 800000 <= score <= 899999:
         return (Decimal(const) - Decimal(5.0)) * (Decimal(0.5) + (Decimal(score) - Decimal(800000)) / Decimal(200000))
     elif 500000 <= score <= 799999:
-        return (Decimal(const) - Decimal(5.0)) * (Decimal(score) - Decimal(500000)) / Decimal(600000)
+        return (Decimal(const) - Decimal(5.0)) * (Decimal(score) - Decimal(500000)) / 600000
     else:
         return 0
 
@@ -91,6 +92,7 @@ def index():
         username = session["username"]
 
         total_op = {
+            "POSSESSION": 0.0,
             "BAS": 0.0, "ADV": 0.0, "EXP": 0.0, "MAS": 0.0, "ULT": 0.0,
             "POPS&ANIME": 0.0, "niconico": 0.0, "東方Project": 0.0, "VARIETY": 0.0, "イロドリミドリ": 0.0, "ゲキマイ": 0.0, "ORIGINAL": 0.0,
             "10": 0.0, "10+": 0.0, "11": 0.0, "11+": 0.0, "12": 0.0, "12+": 0.0, "13": 0.0, "13+": 0.0, "14": 0.0, "14+": 0.0, "15": 0.0,
@@ -98,6 +100,7 @@ def index():
         }
 
         max_op = {
+            "POSSESSION": 0.0,
             "BAS": 0.0, "ADV": 0.0, "EXP": 0.0, "MAS": 0.0, "ULT": 0.0,
             "POPS&ANIME": 0.0, "niconico": 0.0, "東方Project": 0.0, "VARIETY": 0.0, "イロドリミドリ": 0.0, "ゲキマイ": 0.0, "ORIGINAL": 0.0,
             "10": 0.0, "10+": 0.0, "11": 0.0, "11+": 0.0, "12": 0.0, "12+": 0.0, "13": 0.0, "13+": 0.0, "14": 0.0, "14+": 0.0, "15": 0.0,
@@ -132,6 +135,8 @@ def index():
         if len(results) <= 0:
             return render_template("no_data.html", msg="データが存在しません", level="danger")
 
+        count = 0
+
         for row in results:
             title = str(row["id"])
             difficulty = str(title[(len(title) - 3):])
@@ -139,17 +144,18 @@ def index():
             ramp = str(row["ramp"])
             locked = int(row["locked"])
 
-            max_temp = (title_to_const[title] + 3) * 5
-            max_op[difficulty] += max_temp
-
             if locked == 0:
+                max_temp = (title_to_const[title] + 3) * 5
+                max_op[difficulty] += max_temp
+
                 additional = 0.0
-                additional1 = 0.0
 
                 if ramp == "FC":
                     additional1 = 0.5
                 elif ramp == "AJ":
                     additional1 = 1.0
+                else:
+                    additional1 = 0.0
 
                 if score >= 1010000:
                     additional = (title_to_const[title] + 3) * 5
@@ -158,11 +164,19 @@ def index():
                 elif 975000 <= score <= 1007500:
                     additional = (float(rating(title_to_const[title], score)) * 5) + additional1
 
+                additional = additional * 10000
+                additional = round(additional)
+                additional -= (additional % 50)
+                additional /= 10000
+
                 if "_MAS" in title or "_ULT" in title:
                     title2 = title[:(len(title) - 4)]
                     genre = title_to_genre[title2]
                     diff = diff_format(title_to_const[title])
                     ruby = title_to_ruby[title2]
+
+                    max_op["POSSESSION"] += max_temp
+                    total_op["POSSESSION"] += additional
 
                     max_op[genre] += max_temp
                     max_op[diff] += max_temp
@@ -171,7 +185,8 @@ def index():
                     total_op[diff] += additional
                     total_op[ruby] += additional
 
-                    print(f"{title} = {additional}")
+                    count += 1
+                    print(f"{count}\\t{title}\\t{float(rating(title_to_const[title], score))}\\t{additional}")
 
                 total_op[difficulty] += additional
 

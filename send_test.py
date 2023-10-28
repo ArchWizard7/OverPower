@@ -76,4 +76,4 @@ difficulties = [
 for difficulty in difficulties:
     with open(f"./static/{difficulty}.html", "r", encoding="utf-8") as file:
         body = file.read()
-        update_database("yajue1000pie", difficulty, body)
+        update_database("archwizard7", difficulty, body)
