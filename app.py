@@ -6,7 +6,6 @@ import requests
 from PIL import Image
 import io
 import json
-import math
 import base64
 from decimal import Decimal
 
@@ -16,17 +15,8 @@ app = Flask(__name__)
 # app.secret_key = "0123456789ABCDEF0123456789ABCDEF"
 app.secret_key = "01839749127492797979537903792750"
 
-conn = mydb.connect(
-    host="localhost",
-    port=3306,
-    user="root",
-    password="BTcfrLkK1FFU",
-    database="overpower"
-)
 
-conn.ping(reconnect=True)
-
-print(conn.is_connected())
+# print(conn.is_connected())
 
 
 def url_to_base64(url):
@@ -111,6 +101,14 @@ def index():
         title_to_const = {}
         title_to_ruby = {}
 
+        conn = mydb.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="BTcfrLkK1FFU",
+            database="overpower"
+        )
+
         cursor = conn.cursor(dictionary=True)
         cursor.execute(f"SELECT * FROM musics")
         musics = cursor.fetchall()
@@ -190,8 +188,11 @@ def index():
 
                 total_op[difficulty] += additional
 
-        print(total_op)
-        print(max_op)
+        # print(total_op)
+        # print(max_op)
+
+        cursor.close()
+        conn.close()
 
         return render_template("index.html", total_op=total_op, max_op=max_op)
     except KeyError:
@@ -210,9 +211,17 @@ def login():
         hash_obj.update(password.encode("utf-8"))
         hashed = hash_obj.hexdigest()
 
-        cur = conn.cursor(dictionary=True)
-        cur.execute(f"SELECT * FROM users WHERE username = '{username}' AND password = '{hashed}'")
-        user = cur.fetchone()
+        conn = mydb.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="BTcfrLkK1FFU",
+            database="overpower"
+        )
+
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(f"SELECT * FROM users WHERE username = '{username}' AND password = '{hashed}'")
+        user = cursor.fetchone()
 
         if user:
             session["loggedin"] = True
@@ -220,6 +229,9 @@ def login():
             return redirect(url_for("index"))
         else:
             msg = "メールアドレス もしくは パスワード が間違っています"
+
+        cursor.close()
+        conn.close()
 
     return render_template("login.html", msg=msg, level="danger")
 
@@ -244,9 +256,17 @@ def signup():
         hash_obj.update(password.encode("utf-8"))
         hashed = hash_obj.hexdigest()
 
-        cur = conn.cursor(dictionary=True)
-        cur.execute(f"SELECT * FROM users WHERE username = '{username}' OR email = '{email}'")
-        user = cur.fetchone()
+        conn = mydb.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="BTcfrLkK1FFU",
+            database="overpower"
+        )
+
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(f"SELECT * FROM users WHERE username = '{username}' OR email = '{email}'")
+        user = cursor.fetchone()
 
         if user:
             msg = "そのアカウントは既に存在します"
@@ -254,15 +274,26 @@ def signup():
             now = datetime.now()
             created_at = now.strftime('%Y/%m/%d %H:%M:%S')
 
-            cur.execute(f"CREATE TABLE {username} LIKE user_template")
-            cur.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
+            cursor.execute(f"CREATE TABLE {username} LIKE user_template")
+            cursor.execute(f"INSERT INTO users VALUES ('{username}', '{email}', '{hashed}', '{created_at}')")
             conn.commit()
 
             session["loggedin"] = True
             session["username"] = username
             return redirect(url_for("index"))
 
+        cursor.close()
+        conn.close()
+
     return render_template("signup.html", msg=msg, level="danger")
+
+
+@app.route("/editor")
+def editor_page():
+    try:
+        return render_template("editor.html")
+    except KeyError:
+        return render_template("404.html"), 404
 
 
 @app.route("/developer")
@@ -285,9 +316,20 @@ def music_list():
     limit = 100
     offset = (num - 1) * 100
 
-    cur = conn.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM musics ORDER BY id LIMIT {limit} OFFSET {offset}")
-    musics = cur.fetchall()
+    conn = mydb.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="BTcfrLkK1FFU",
+        database="overpower"
+    )
+
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(f"SELECT * FROM musics ORDER BY id LIMIT {limit} OFFSET {offset}")
+    musics = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template("music-list.html", musics=musics, num=num, max_page=13)
 
@@ -327,13 +369,21 @@ def register_music():
 
     # print(form)
 
-    cur = conn.cursor(dictionary=True)
+    conn = mydb.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="BTcfrLkK1FFU",
+        database="overpower"
+    )
+
+    cursor = conn.cursor(dictionary=True)
 
     # UPDATE
     # print("[ UPDATE ]")
     # print(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
 
-    cur.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
+    cursor.execute(f"UPDATE musics SET id = (id + 1) WHERE (id >= {identifier})")
     conn.commit()
 
     # INSERT
@@ -345,13 +395,16 @@ def register_music():
     # )
     # """)
 
-    cur.execute(f"""INSERT INTO musics VALUES (
+    cursor.execute(f"""INSERT INTO musics VALUES (
     '{identifier}', '{title}', '{ruby}', '{artist}', '{genre}', '{version}', '{bpm}', '{jacket_base64}',
     '{basic_const}', '{advanced_const}', '{expert_const}', '{master_const}', '{ultima_const}',
     '{expert_nd}', '{master_nd}', '{ultima_nd}'
     )
     """)
     conn.commit()
+
+    cursor.close()
+    conn.close()
 
     return render_template("developer.html", msg=msg, success=True)
 
@@ -366,21 +419,32 @@ def delete_music():
     args = request.args
     identifier = int(args.get("id"))
 
-    cur = conn.cursor(dictionary=True)
+    conn = mydb.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="BTcfrLkK1FFU",
+        database="overpower"
+    )
+
+    cursor = conn.cursor(dictionary=True)
 
     # DELETE
     # print("[ DELETE ]")
     # print(f"DELETE FROM musics WHERE id = '{identifier}'")
 
-    cur.execute(f"DELETE FROM musics WHERE id = '{identifier}'")
+    cursor.execute(f"DELETE FROM musics WHERE id = '{identifier}'")
     conn.commit()
 
     # UPDATE
     # print("[ UPDATE ]")
     # print(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
 
-    cur.execute(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
+    cursor.execute(f"UPDATE musics SET id = (id - 1) WHERE (id >= {identifier + 1})")
     conn.commit()
+
+    cursor.close()
+    conn.close()
 
     return render_template("music-list.html", msg=msg, success=True, num=1, max_page=13)
 
@@ -398,10 +462,21 @@ def get_musics():
     limit = 100
     offset = (num - 1) * 100
 
-    cur = conn.cursor(dictionary=True)
-    cur.execute(f"SELECT * FROM musics ORDER BY id LIMIT {limit} OFFSET {offset}")
-    musics = cur.fetchall()
+    conn = mydb.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="BTcfrLkK1FFU",
+        database="overpower"
+    )
+
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(f"SELECT * FROM musics ORDER BY id LIMIT {limit} OFFSET {offset}")
+    musics = cursor.fetchall()
     json_data = json.dumps(musics, indent=4, ensure_ascii=False)
+
+    cursor.close()
+    conn.close()
 
     return json_data, 200, {
         "Content-Type": "application/json"

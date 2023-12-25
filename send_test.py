@@ -15,12 +15,26 @@ def update_database(username, difficulty, html_body):
 
     musics = soup.select("div .musiclist_box")
 
+    if difficulty == "BAS":
+        const_name = "basic-const"
+    if difficulty == "ADV":
+        const_name = "advanced-const"
+    if difficulty == "EXP":
+        const_name = "expert-const"
+    if difficulty == "MAS":
+        const_name = "master-const"
+    if difficulty == "ULT":
+        const_name = "ultima-const"
+
     for row in musics:
         title = row.find(class_="music_title").text.replace("'", "''").replace("&#039;", "''")
         score = 0
         clear = "NONE"
         ramp = "NONE"
         full_chain = "NONE"
+
+        cursor.execute(f"SELECT `{const_name}` FROM musics WHERE title = '{title}'")
+        const = cursor.fetchone()[const_name]
 
         if row.find("span", class_="text_b") is not None:
             score = int(row.find("span", class_="text_b").text.replace(",", ""))
@@ -56,7 +70,7 @@ def update_database(username, difficulty, html_body):
             if score == 1010000:
                 ramp = "AJC"
 
-        query = f"""INSERT INTO {username.lower()} (id, score, clear, ramp, full_chain, locked) VALUES ('{title}_{difficulty}', '{score}', '{clear}', '{ramp}', '{full_chain}', '0') ON DUPLICATE KEY UPDATE score = VALUES(score), clear = VALUES(clear), ramp = VALUES(ramp), full_chain = VALUES(full_chain)"""
+        query = f"""INSERT INTO {username.lower()} (id, score, clear, ramp, full_chain, locked, const) VALUES ('{title}_{difficulty}', '{score}', '{clear}', '{ramp}', '{full_chain}', '0', '{const}') ON DUPLICATE KEY UPDATE score = VALUES(score), clear = VALUES(clear), ramp = VALUES(ramp), full_chain = VALUES(full_chain), const = VALUES(const)"""
 
         # print(query)
         cursor.execute(query)
